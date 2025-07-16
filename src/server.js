@@ -4,28 +4,58 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const {logger} = require('./utils/logger');
+const errorHandler = require('./middlewares/errorHandler');
+const ApiEerror = require('./utils/ApiError');
 
 const app = express();
 
 // Init connection to MongoDB
 connectDB();
 
-// Middlewares
+// MIDDLEWARES
+// Security Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Adjust this to your frontend URL
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
+
+// Body Parsing Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Static Fiiles
-app.use('/uploads', express.static('uploads'));
+// Request Logging Middleware (Dev Only)
+if (process.env.NODE_ENV === 'development') {
+  app.use((req, res, next) => {
+    logger.info(`${req.method} ${req.url}`);
+    next();
+  });
+}
 
-// Test Route
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the Student Management API' });
+// Static Fiiles
+app.use('/uploads', express.static('uploads'), {
+  maxAge: '1d', // Cache static files for 1 day
+  etag: true, 
 });
+
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  })
+});
+
+// 404 Errors
+app.all('*', (req, res, next) => {
+  next(ApiEerror.notFound(`Route ${req.originalUrl} not found`));
+});
+
+// Global Error Handler
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
