@@ -4,6 +4,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const {logger} = require('./utils/logger');
+const routes = require('./routes');
+
 const errorHandler = require('./middleware/errorHandler');
 const ApiError = require('./utils/ApiError');
 
@@ -34,6 +36,12 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+
+// API ROUTES
+app.use('/api/v1', routes);
+
+
+
 // Static Fiiles
 app.use('/uploads', express.static('uploads', {
   maxAge: '1d', // Cache static files for 1 day
@@ -49,10 +57,8 @@ app.get('/health', (req, res) => {
   })
 });
 
+
 // 404 Errors
-// app.all('*', (req, res, next) => {
-//   next(ApiError.notFound(`Route ${req.originalUrl} not found`));
-// });
 app.use((req, res, next) => {
   const error = ApiError.notFound(`Route ${req.originalUrl} not found`);
   next(error);
