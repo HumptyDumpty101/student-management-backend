@@ -4,8 +4,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const {logger} = require('./utils/logger');
-const errorHandler = require('./middlewares/errorHandler');
-const ApiEerror = require('./utils/ApiError');
+const errorHandler = require('./middleware/errorHandler');
+const ApiError = require('./utils/ApiError');
 
 const app = express();
 
@@ -35,10 +35,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Static Fiiles
-app.use('/uploads', express.static('uploads'), {
+app.use('/uploads', express.static('uploads', {
   maxAge: '1d', // Cache static files for 1 day
   etag: true, 
-});
+}));
 
 // Health Check Endpoint
 app.get('/health', (req, res) => {
@@ -50,9 +50,15 @@ app.get('/health', (req, res) => {
 });
 
 // 404 Errors
-app.all('*', (req, res, next) => {
-  next(ApiEerror.notFound(`Route ${req.originalUrl} not found`));
+// app.all('*', (req, res, next) => {
+//   next(ApiError.notFound(`Route ${req.originalUrl} not found`));
+// });
+app.use((req, res, next) => {
+  const error = ApiError.notFound(`Route ${req.originalUrl} not found`);
+  next(error);
 });
+
+
 
 // Global Error Handler
 app.use(errorHandler);
