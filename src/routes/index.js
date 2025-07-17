@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 // Route modules import
-const authRoutes = require('./auth');
-const studentRoutes = require('./students');
-const staffRoutes = require('./staff');
+const authRoutes = require('./authRoute');
+const studentRoutes = require('./studentRoute');
+const staffRoutes = require('./staffRoute');
 const { version } = require('mongoose');
 
 // Mount route modules

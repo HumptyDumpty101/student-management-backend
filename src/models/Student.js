@@ -24,7 +24,6 @@ const studentSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
     unique: true,
     lowercase: true,
     trim: true,
@@ -37,12 +36,6 @@ const studentSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Date of birth is required']
   },
-  age: {
-    type: Number,
-    required: [true, 'Age is required'],
-    min: [5, 'Age must be at least 5'],
-    max: [25, 'Age cannot exceed 25']
-  },
   gender: {
     type: String,
     enum: {
@@ -51,9 +44,9 @@ const studentSchema = new mongoose.Schema({
     },
     required: [true, 'Gender is required']
   },
-  grade: {
+  standard: {
     type: String,
-    required: [true, 'Grade is required'],
+    required: [true, 'Standard is required'],
     enum: {
       values: ['KG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'],
       message: 'Please select a valid grade'
@@ -87,11 +80,6 @@ const studentSchema = new mongoose.Schema({
     default: 0
   },
   contactInfo: {
-    phone: { 
-      type: String, 
-      required: [true, 'Phone number is required'],
-      match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit phone number']
-    },
     address: {
       street: { 
         type: String, 
@@ -228,9 +216,8 @@ studentSchema.index({ studentId: 1 });
 
 // Text index for search functionality
 studentSchema.index({ 
-  'name.first': 'text', 
-  'name.last': 'text',
-  email: 'text', 
+  'name.firstName': 'text', 
+  'name.lastName': 'text',
   studentId: 'text' 
 });
 
@@ -292,8 +279,8 @@ studentSchema.methods.removePhoto = function() {
 };
 
 // Static Methods
-studentSchema.statics.findByGradeAndSection = function(grade, section) {
-  return this.find({ grade, section, isActive: true });
+studentSchema.statics.findByStandardAndSection = function(standard, section) {
+  return this.find({ standard, section, isActive: true });
 };
 
 studentSchema.statics.searchStudents = function(searchTerm) {
