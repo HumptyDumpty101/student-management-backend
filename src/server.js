@@ -2,11 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const connectDB = require('./config/db');
+const connectDB = require('./config/dbConfig');
 const {logger} = require('./utils/logger');
 const routes = require('./routes');
 
-const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require('./middleware/errorHandlerMiddleware');
 const ApiError = require('./utils/ApiError');
 
 const app = express();
@@ -48,14 +48,6 @@ app.use('/uploads', express.static('uploads', {
   etag: true, 
 }));
 
-// Health Check Endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
-  })
-});
 
 
 // 404 Errors

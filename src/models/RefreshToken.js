@@ -1,72 +1,71 @@
 const mongoose = require('mongoose');
 
 const refreshTokenSchema = new mongoose.Schema({
-    token: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    expiresAt: {
-        type: Date,
-        required: true,
-        default: () => Date.now() + (process.env.JWT_REFRESH_TOKEN_EXPIRY ? parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRY) * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000) // Default to 7 days
-    },
-    createdByIp: {
-        type: String,
-        default: null
-    },
-    revokedAt: {
-        type: Date,
-        default: null
-    },
-    revokedByIp: {
-        type: String,
-        default: null
-    },
-    replacedByToken: {
-        type: String,
-        default: null
-    }
-},
-{
-    timestamps: true
-})
+  token: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+    default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+  },
+  createdByIp: {
+    type: String,
+    required: true
+  },
+  revokedAt: {
+    type: Date
+  },
+  revokedByIp: {
+    type: String
+  },
+  replacedByToken: {
+    type: String
+  }
+}, {
+  timestamps: true
+});
 
-// Index for expired token cleanup
+// Index for cleanup of expired tokens
 refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-// Check if the token is expired
+// Instance methods
 refreshTokenSchema.methods.isExpired = function() {
-    return this.expiresAt.getTime() <= new Date.now();
+  return Date.now() >= this.expiresAt.getTime();
 };
 
-// Check if the token is active (not revoked and not expired)
 refreshTokenSchema.methods.isActive = function() {
-    return !this.revokedAt && !this.isExpired();
-}
+  return !this.revokedAt && !this.isExpired();
+};
 
-// Revoke the token
 refreshTokenSchema.methods.revoke = function(ipAddress, replacedByToken) {
-    this.revokedAt = new Date();
-    this.revokedByIp = ipAddress;
-    this.replacedByToken = replacedByToken;
-    return this.save();
-}
+  this.revokedAt = new Date();
+  this.revokedByIp = ipAddress;
+  this.replacedByToken = replacedByToken;
+  return this.save();
+};
 
-// Static method to revoke all tokens for a user
+// Static methods
 refreshTokenSchema.statics.revokeAllUserTokens = async function(userId, ipAddress) {
-    await this.updateMany(
-        { user: userId, revokedAt: {$exists: false} },
-        { $set: { revokedAt: new Date(), revokedByIp: ipAddress } }
-    )
-}
+  await this.updateMany(
+    { user: userId, revokedAt: { $exists: false } },
+    { 
+      revokedAt: new Date(),
+      revokedByIp: ipAddress 
+    }
+  );
+};
 
-// Static method to clean up expired tokens
-refreshTokenSchema.statics.cleanUpExpiredTokens = async function() {
-    await this.deleteMany({ expiresAt: { $lt: new Date() } });
-}
+refreshTokenSchema.statics.cleanupExpiredTokens = async function() {
+  await this.deleteMany({ expiresAt: { $lt: new Date() } });
+};
+
+module.exports = mongoose.model('RefreshToken', refreshTokenSchema);
+

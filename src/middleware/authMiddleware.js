@@ -1,4 +1,4 @@
-const {verifyAccessToken} = require('../config/jwt');
+const {verifyAccessToken} = require('../config/jwtConfig');
 const ApiError = require('../utils/ApiError');
 const User = require('../models/User');
 
