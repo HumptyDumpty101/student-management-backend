@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema({
     department: {
         type: String,
         enum: {
-            values: ['Administration', 'Academics', 'Sports', ' Arts', 'Science'],
+            values: ['Administration', 'Academics', 'Sports', 'Arts', 'Science'],
             message: 'Invalid Department'
         },
         required: function() {
@@ -121,7 +121,7 @@ userSchema.index({ employeeId: 1 });
 
 // Virtual for full name
 userSchema.virtual('fullName').get(function(){
-    return `${this.name.firstName} ${this.name.lastname}`;
+    return `${this.name.firstName} ${this.name.lastName}`;
 });
 
 // Virtual to check if user is locked
