@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 const authMiddleware = async(req,res,next) => {
     try {
-        const token = reqr.cookies.accessToken;
+        const token = req.cookies.accessToken;
 
         if(!token) {
             return next(ApiError.unauthorized('Access token is missing'));
