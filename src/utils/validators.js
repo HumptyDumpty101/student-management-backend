@@ -456,12 +456,12 @@ const paginationSchema = Joi.object({
   page: Joi.number().min(1).default(1),
   limit: Joi.number().min(1).max(100).default(10),
   search: Joi.string().allow('').optional(),
-  sortBy: Joi.string().optional(),
+  sortBy: Joi.string().valid('createdAt', 'name.firstName', 'studentId', 'standard', 'department', 'email').allow('').optional(),
   sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
-  standard: Joi.string().valid('KG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th').optional(),
-  section: Joi.string().valid('A', 'B', 'C', 'D').optional(),
+  standard: Joi.string().valid('KG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th').allow('').optional(),
+  section: Joi.string().valid('A', 'B', 'C', 'D').allow('').optional(),
   isActive: Joi.boolean().optional(),
-  department: Joi.string().valid('Administration', 'Academics', 'Sports', 'Arts', 'Science').optional()
+  department: Joi.string().valid('Administration', 'Academics', 'Sports', 'Arts', 'Science').allow('').optional()
 });
 
 const idParamSchema = Joi.object({
