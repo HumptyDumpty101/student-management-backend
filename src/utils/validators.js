@@ -455,12 +455,13 @@ const studentUpdateSchema = Joi.object({
 const paginationSchema = Joi.object({
   page: Joi.number().min(1).default(1),
   limit: Joi.number().min(1).max(100).default(10),
-  search: Joi.string().optional(),
+  search: Joi.string().allow('').optional(),
   sortBy: Joi.string().optional(),
   sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
   standard: Joi.string().valid('KG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th').optional(),
   section: Joi.string().valid('A', 'B', 'C', 'D').optional(),
-  isActive: Joi.boolean().optional()
+  isActive: Joi.boolean().optional(),
+  department: Joi.string().valid('Administration', 'Academics', 'Sports', 'Arts', 'Science').optional()
 });
 
 const idParamSchema = Joi.object({
