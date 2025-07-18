@@ -5,6 +5,7 @@ const router = express.Router();
 const { authMiddleware } = require('../middleware/authMiddleware');
 const { requirePermission } = require('../middleware/rbacMiddleware');
 const { validateBody, validateQuery, validateParams } = require('../middleware/validationMiddleware');
+const upload = require('../config/multer');
 
 // Import validation schemas
 const { studentSchema, studentUpdateSchema, paginationSchema, idParamSchema } = require('../utils/validators');
@@ -67,6 +68,7 @@ router.delete('/:id',
 router.post('/:id/photo', 
   requirePermission('students', 'update'),
   validateParams(idParamSchema),
+  upload.single('photo'),
   studentController.uploadPhoto
 );
 
