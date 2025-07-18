@@ -59,7 +59,7 @@ const optionalAuth = async (req, res, next) => {
     const token = req.cookies.accessToken;
     
     if (token) {
-      const decoded = verifyAccessToken(token);
+      const decoded = await verifyAccessToken(token);
       const user = await User.findById(decoded.id).select('-password');
       
       if (user && user.isActive && !user.isLocked) {

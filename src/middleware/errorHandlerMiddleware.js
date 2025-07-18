@@ -5,7 +5,12 @@ const errorHandler = (err, req, res, next) => {
     let error = {...err};
     error.message = err.message || "Something went wrong";
 
-    logger.info(`Error : ${err}`)
+    logger.error('Error caught in error handler:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+        ...(err.statusCode && { statusCode: err.statusCode })
+    });
 
     // mongoose bad objectId
     if(err.name === 'CastError') {
