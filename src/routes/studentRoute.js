@@ -1,74 +1,90 @@
 const express = require('express');
 const router = express.Router();
 
-// Middlewares
-// const { authMiddleware } = require('../middleware/authMiddleware');
-// const {requirePermission} = require('../middleware/permissionMiddleware');
-// const {validateBody, validateQuery, validateParams} = require('../middleware/validation');
+// Import middleware
+const { authMiddleware } = require('../middleware/authMiddleware');
+const { requirePermission } = require('../middleware/rbacMiddleware');
+const { validateBody, validateQuery, validateParams } = require('../middleware/validationMiddleware');
 
-// Import validation schemas 
-// const { studentSchema, studentUpdateSchema } = require('../utils/validators');
+// Import validation schemas
+const { studentSchema, studentUpdateSchema, paginationSchema, idParamSchema } = require('../utils/validators');
 
-// Import controllers 
-// const studentController = require('../controllers/studentController');
+// Import controllers
+const studentController = require('../controllers/studentController');
 
 // Apply authentication to all student routes
-// router.use(authMiddleware);
+router.use(authMiddleware);
 
 // @route   GET /api/v1/students
 // @desc    Get all students with pagination and search
 // @access  Private (requires students.read permission)
-router.get('/', (req, res) => {
-  res.json({ message: 'Get students list - TODO: Implement' });
-});
+router.get('/', 
+  requirePermission('students', 'read'),
+  validateQuery(paginationSchema),
+  studentController.getStudents
+);
 
 // @route   POST /api/v1/students
 // @desc    Create new student
 // @access  Private (requires students.create permission)
-router.post('/', (req, res) => {
-  res.json({ message: 'Create student - TODO: Implement' });
-});
+router.post('/', 
+  requirePermission('students', 'create'),
+  validateBody(studentSchema),
+  studentController.createStudent
+);
 
 // @route   GET /api/v1/students/:id
 // @desc    Get single student by ID
 // @access  Private (requires students.read permission)
-router.get('/:id', (req, res) => {
-  res.json({ message: `Get student ${req.params.id} - TODO: Implement` });
-});
+router.get('/:id', 
+  requirePermission('students', 'read'),
+  validateParams(idParamSchema),
+  studentController.getStudent
+);
 
 // @route   PUT /api/v1/students/:id
 // @desc    Update student
 // @access  Private (requires students.update permission)
-router.put('/:id', (req, res) => {
-  res.json({ message: `Update student ${req.params.id} - TODO: Implement` });
-});
+router.put('/:id', 
+  requirePermission('students', 'update'),
+  validateParams(idParamSchema),
+  validateBody(studentUpdateSchema),
+  studentController.updateStudent
+);
 
 // @route   DELETE /api/v1/students/:id
 // @desc    Delete student
 // @access  Private (requires students.delete permission)
-router.delete('/:id', (req, res) => {
-  res.json({ message: `Delete student ${req.params.id} - TODO: Implement` });
-});
+router.delete('/:id', 
+  requirePermission('students', 'delete'),
+  validateParams(idParamSchema),
+  studentController.deleteStudent
+);
 
 // @route   POST /api/v1/students/:id/photo
 // @desc    Upload student photo
 // @access  Private (requires students.update permission)
-router.post('/:id/photo', (req, res) => {
-  res.json({ message: `Upload photo for student ${req.params.id} - TODO: Implement` });
-});
+router.post('/:id/photo', 
+  requirePermission('students', 'update'),
+  validateParams(idParamSchema),
+  studentController.uploadPhoto
+);
 
 // @route   DELETE /api/v1/students/:id/photo
 // @desc    Delete student photo
 // @access  Private (requires students.update permission)
-router.delete('/:id/photo', (req, res) => {
-  res.json({ message: `Delete photo for student ${req.params.id} - TODO: Implement` });
-});
+router.delete('/:id/photo', 
+  requirePermission('students', 'update'),
+  validateParams(idParamSchema),
+  studentController.deletePhoto
+);
 
 // @route   GET /api/v1/students/:id/photo
 // @desc    Get student photo
 // @access  Public (photos are public)
-router.get('/:id/photo', (req, res) => {
-  res.json({ message: `Get photo for student ${req.params.id} - TODO: Implement` });
-});
+router.get('/:id/photo', 
+  validateParams(idParamSchema),
+  studentController.getPhoto
+);
 
 module.exports = router;
