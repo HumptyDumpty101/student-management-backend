@@ -139,7 +139,7 @@ userSchema.pre('save', async function(next) {
 
 // Generate Employee ID for staff
 userSchema.pre('save', async function(next) {
-    if (this.role === 'staff' && !this.employeeId){
+    if (this.role === 'staff' && (!this.employeeId || this.employeeId.trim() === '')){
         try {
             const year = new Date().getFullYear();
             const count = await this.constructor.countDocuments({ role: 'staff'});

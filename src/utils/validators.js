@@ -107,6 +107,12 @@ const staffSchema = Joi.object({
             update: Joi.boolean().default(false),
             delete: Joi.boolean().default(false)
         }).required(),
+        staff: Joi.object({
+            create: Joi.boolean().default(false),
+            read: Joi.boolean().default(false),
+            update: Joi.boolean().default(false),
+            delete: Joi.boolean().default(false)
+        }).required()
     }).required()
 });
 

@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const studentSchema = new mongoose.Schema({
   studentId: {
     type: String,
-    required: true,
     unique: true
   },
   name: {
@@ -234,7 +233,7 @@ studentSchema.virtual('fullAddress').get(function() {
 
 // Pre-save middleware to generate student ID
 studentSchema.pre('save', async function(next) {
-  if (!this.studentId) {
+  if (this.isNew && (!this.studentId || this.studentId.trim() === '')) {
     try {
       const year = new Date().getFullYear();
       const count = await this.constructor.countDocuments();
