@@ -159,6 +159,12 @@ const permissionSchema = Joi.object({
     read: Joi.boolean().required(),
     update: Joi.boolean().required(),
     delete: Joi.boolean().required()
+  }).required(),
+  staff: Joi.object({
+    create: Joi.boolean().required(),
+    read: Joi.boolean().required(),
+    update: Joi.boolean().required(),
+    delete: Joi.boolean().required()
   }).required()
 });
 
